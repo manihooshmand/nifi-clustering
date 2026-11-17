@@ -1,0 +1,145 @@
+
+services:
+
+  # ================ ZOOKEEPER ================
+
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: nifi-zookeeper
+    hostname: zookeeper
+    restart: unless-stopped
+
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_STANDALONE_ENABLED: "true"
+
+    volumes:
+      - ./data/zookeeper:/data
+
+    networks:
+      - nifi-net
+
+
+  # ================ NIFI NODE 1 ================
+
+  nifi1:
+    image: apache/nifi:2.6.0
+    container_name: nifi1
+    hostname: nifi1
+    restart: unless-stopped
+
+    depends_on:
+      - zookeeper
+
+    environment:
+      NIFI_CLUSTER_IS_NODE: "true"
+      NIFI_CLUSTER_ADDRESS: nifi1
+      NIFI_CLUSTER_NODE_PROTOCOL_PORT: 11443
+
+      NIFI_ZK_CONNECT_STRING: zookeeper:2181
+      NIFI_ELECTION_MAX_WAIT: "1 min"
+
+      NIFI_SENSITIVE_PROPS_KEY: "change-this-to-a-long-random-secret"
+
+      NIFI_JVM_HEAP_INIT: 1g
+      NIFI_JVM_HEAP_MAX: 2g
+
+    ports:
+      - "8443:8443"
+
+    volumes:
+      - ./data/nifi1/database_repository:/opt/nifi/nifi-current/database_repository
+      - ./data/nifi1/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./data/nifi1/content_repository:/opt/nifi/nifi-current/content_repository
+      - ./data/nifi1/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - ./data/nifi1/state:/opt/nifi/nifi-current/state
+      - ./data/nifi1/logs:/opt/nifi/nifi-current/logs
+
+    networks:
+      - nifi-net
+
+
+  # ================ NIFI NODE 2 ================
+
+  nifi2:
+    image: apache/nifi:2.6.0
+    container_name: nifi2
+    hostname: nifi2
+    restart: unless-stopped
+
+    depends_on:
+      - zookeeper
+
+    environment:
+      NIFI_CLUSTER_IS_NODE: "true"
+      NIFI_CLUSTER_ADDRESS: nifi2
+      NIFI_CLUSTER_NODE_PROTOCOL_PORT: 11443
+
+      NIFI_ZK_CONNECT_STRING: zookeeper:2181
+      NIFI_ELECTION_MAX_WAIT: "1 min"
+
+      NIFI_SENSITIVE_PROPS_KEY: "change-this-to-a-long-random-secret"
+
+      NIFI_JVM_HEAP_INIT: 1g
+      NIFI_JVM_HEAP_MAX: 2g
+
+    ports:
+      - "8444:8443"
+
+    volumes:
+      - ./data/nifi2/database_repository:/opt/nifi/nifi-current/database_repository
+      - ./data/nifi2/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./data/nifi2/content_repository:/opt/nifi/nifi-current/content_repository
+      - ./data/nifi2/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - ./data/nifi2/state:/opt/nifi/nifi-current/state
+      - ./data/nifi2/logs:/opt/nifi/nifi-current/logs
+
+    networks:
+      - nifi-net
+
+
+  # ================ NIFI NODE 3 ================
+
+  nifi3:
+    image: apache/nifi:2.6.0
+    container_name: nifi3
+    hostname: nifi3
+    restart: unless-stopped
+
+    depends_on:
+      - zookeeper
+
+    environment:
+      NIFI_CLUSTER_IS_NODE: "true"
+      NIFI_CLUSTER_ADDRESS: nifi3
+      NIFI_CLUSTER_NODE_PROTOCOL_PORT: 11443
+
+      NIFI_ZK_CONNECT_STRING: zookeeper:2181
+      NIFI_ELECTION_MAX_WAIT: "1 min"
+
+      NIFI_SENSITIVE_PROPS_KEY: "change-this-to-a-long-random-secret"
+
+      NIFI_JVM_HEAP_INIT: 1g
+      NIFI_JVM_HEAP_MAX: 2g
+
+    ports:
+      - "8445:8443"
+
+    volumes:
+      - ./data/nifi3/database_repository:/opt/nifi/nifi-current/database_repository
+      - ./data/nifi3/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./data/nifi3/content_repository:/opt/nifi/nifi-current/content_repository
+      - ./data/nifi3/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - ./data/nifi3/state:/opt/nifi/nifi-current/state
+      - ./data/nifi3/logs:/opt/nifi/nifi-current/logs
+
+    networks:
+      - nifi-net
+
+
+# ================ NETWORK ================
+
+networks:
+  nifi-net:
+    driver: bridge
+

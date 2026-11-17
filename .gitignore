@@ -1,0 +1,16 @@
+# Environment and secrets
+.env
+*.key
+*.jks
+*.p12
+*.pfx
+
+# NiFi persistent data
+data/
+logs/
+certs/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
